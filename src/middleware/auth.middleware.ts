@@ -1,25 +1,35 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { JWTpayload } from "../types/user.js";
+import redisClient from "@/config/redis.js";
+import { JWTpayload } from "@/types/user.js";
 
-const JWT_secert: string = process.env.JWT || "fallback_secret";
+const JWT_SECRET = process.env.JWT_SECRET || "fallback_secret";
 
-export const authenticate = (
+export const authenticate = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const requestHeader = req.headers.authorization;
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.split(" ")[1];
 
-  if (!requestHeader?.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "unauthorized: token not valid" });
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized: No token" });
   }
-  const token = requestHeader.split(" ")[1];
-  console.log(token);
+
   try {
-    req.user = token && jwt.verify(token, JWT_secert);
+    // 1. Check if token is blacklisted in Redis
+    const isBlacklisted = await redisClient.get(`blacklist:${token}`);
+    if (isBlacklisted) {
+      return res.status(401).json({ message: "Token is invalid (logged out)" });
+    }
+
+    // 2. Standard JWT verification
+    const decoded = jwt.verify(token, JWT_SECRET) as JWTpayload;
+    // attach the user data (payload) to the request for easier retrieval later on
+    req.user = decoded;
     next();
-  } catch (e) {
-    return res.status(403).json({ message: "error" });
+  } catch (error) {
+    return res.status(403).json({ message: "Forbidden: Invalid token" });
   }
 };
