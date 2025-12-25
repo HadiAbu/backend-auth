@@ -1,0 +1,1 @@
+{"version":3,"file":"book.service.d.ts","sourceRoot":"","sources":["../../src/services/book.service.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,IAAI,EAAE,OAAO,EAAE,MAAM,kBAAkB,CAAC;AAEjD,qBAAa,WAAW;IAEtB,MAAM,CAAC,YAAY,CAAC,MAAM,EAAE,MAAM,GAAG,IAAI,EAAE;IAK3C,MAAM,CAAC,MAAM,CAAC,IAAI,EAAE,OAAO,EAAE,MAAM,EAAE,MAAM,GAAG,IAAI;CASnD"}

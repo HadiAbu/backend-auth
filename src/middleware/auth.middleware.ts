@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import redisClient from "@/config/redis.js";
-import { JWTpayload } from "@/types/user.js";
+import redisClient from "../config/redis.js";
+import { JWTpayload } from "../types/user.js";
 
 const JWT_SECRET = process.env.JWT_SECRET || "fallback_secret";
 
@@ -26,6 +26,7 @@ export const authenticate = async (
 
     // 2. Standard JWT verification
     const decoded = jwt.verify(token, JWT_SECRET) as JWTpayload;
+    console.log(decoded);
     // attach the user data (payload) to the request for easier retrieval later on
     req.user = decoded;
     next();

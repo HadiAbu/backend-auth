@@ -1,0 +1,21 @@
+services:
+  # The API Service
+  api:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - JWT_SECRET=your_assignment_secret_key
+      - REDIS_URL=redis://redis_db:6379
+      - NODE_ENV=development
+    depends_on:
+      - redis_db
+    restart: always
+
+  # The Redis Service
+  redis_db:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    restart: always

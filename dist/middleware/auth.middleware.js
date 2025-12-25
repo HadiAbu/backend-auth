@@ -1,17 +1,26 @@
 import jwt from "jsonwebtoken";
-const JWT_secert = process.env.JWT || "fallback_secret";
-export const authenticate = (req, res, next) => {
-    const requestHeader = req.headers.authorization;
-    if (!requestHeader?.startsWith("Bearer ")) {
-        return res.status(401).json({ message: "unauthorized: token not valid" });
+import redisClient from "../config/redis.js";
+const JWT_SECRET = process.env.JWT_SECRET || "fallback_secret";
+export const authenticate = async (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.split(" ")[1];
+    if (!token) {
+        return res.status(401).json({ message: "Unauthorized: No token" });
     }
-    const token = requestHeader.split(" ")[1];
     try {
-        req.user = token && jwt.verify(token, JWT_secert);
+        // 1. Check if token is blacklisted in Redis
+        const isBlacklisted = await redisClient.get(`blacklist:${token}`);
+        if (isBlacklisted) {
+            return res.status(401).json({ message: "Token is invalid (logged out)" });
+        }
+        // 2. Standard JWT verification
+        const decoded = jwt.verify(token, JWT_SECRET);
+        // attach the user data (payload) to the request for easier retrieval later on
+        req.user = decoded;
         next();
     }
-    catch (e) {
-        return res.status(403).json({ message: "forbidden, cannot authorize" });
+    catch (error) {
+        return res.status(403).json({ message: "Forbidden: Invalid token" });
     }
 };
 //# sourceMappingURL=auth.middleware.js.map
