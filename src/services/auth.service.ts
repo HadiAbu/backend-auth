@@ -3,7 +3,7 @@ import { User, JWTpayload } from "../types/user.js";
 import bcrypt from "bcryptjs";
 import { users } from "../config/db.js";
 
-const JWT_secert: string = process.env.JWT || "fallback_secret";
+const JWT_secert: string = process.env.JWT;
 
 export class AuthService {
   static async register(username: string, pass: string): Promise<User> {
