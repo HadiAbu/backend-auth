@@ -12,6 +12,8 @@ import cors from "cors";
 import authRoutes from "./routes/auth.routes.js";
 import bookRoutes from "./routes/book.routes.js";
 import helmet from "helmet";
+import rateLimit from "express-rate-limit";
+import hpp from "hpp";
 
 dotenv.config();
 
@@ -44,11 +46,22 @@ const csrfProtection = csrf({
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.set("view engine", "ejs");
+app.use(hpp());
 
-app.use(express.json());
+app.use(express.json({ limit: "10kb" })); // Body limit prevents DOS
 
 // adding error handler middleware
 app.use(errorHandler);
+
+// RATE LIMITING (Brute force protection)
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per window
+  message: { message: "Too many requests, please try again later." },
+});
+
+// Apply to all routes
+app.use("/api/", limiter);
 
 // Every GET request will now have access to a fresh token via req.csrfToken()
 app.get("/api/get-config", csrfProtection, (req, res) => {
