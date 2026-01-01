@@ -62,13 +62,10 @@ docker-compose up --build
    cd mini-library-api
    ```
    Install Dependencies:
-
-Bash
-
-npm install
+    ```bash
+    npm install
+    ```
 Environment Setup: Create a .env file in the root directory and populate it with your configuration:
-
-Code snippet
 
 PORT=3000
 JWT_SECRET=your_super_secret_key_change_me
@@ -76,12 +73,10 @@ REDIS_URL=redis://localhost:6379
 NODE_ENV=development
 Start Redis: Ensure you have a Redis server running locally. If you have Redis installed, start it with:
 
-Bash
-
+```bash
 redis-server
+```
 Run the Application:
-
-Bash
 
 # For Development (Nodemon + ts-node)
 
