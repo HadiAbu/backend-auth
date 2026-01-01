@@ -67,10 +67,13 @@ docker-compose up --build
     ```
 Environment Setup: Create a .env file in the root directory and populate it with your configuration:
 
+
 PORT=3000
 JWT_SECRET=your_super_secret_key_change_me
 REDIS_URL=redis://localhost:6379
 NODE_ENV=development
+
+
 Start Redis: Ensure you have a Redis server running locally. If you have Redis installed, start it with:
 
 ```bash
