@@ -31,4 +31,92 @@ This project goes beyond basic authentication to implement a multi-layered defen
 - **Runtime**: Node.js (v18+)
 - **Framework**: Express.js
 - **Language**: TypeScript
-- **Security**: `csurf`,
+- **Security**: `csurf`, `helmet`, `express-rate-limit`, `hpp`, `cookie-parser`
+- **Session/Cache**: Redis (for Token Blacklisting)
+- **Testing**: Jest & Supertest
+
+---
+
+## 📋 Prerequisites
+
+- [Node.js](https://nodejs.org/) (v18+ recommended)
+- [Docker & Docker Compose](https://www.docker.com/) (Recommended for Redis orchestration)
+
+---
+
+## ⚙️ Installation & Setup
+
+### Option A: Using Docker (Recommended)
+
+This starts the API and a Redis instance automatically, configured to communicate within a private network.
+
+```bash
+docker-compose up --build
+```
+
+### Option B: Local Development
+
+1. **Clone the Repository:**
+   ```bash
+   git clone [https://github.com/yourusername/mini-library-api.git](https://github.com/yourusername/mini-library-api.git)
+   cd mini-library-api
+   ```
+   Install Dependencies:
+
+Bash
+
+npm install
+Environment Setup: Create a .env file in the root directory and populate it with your configuration:
+
+Code snippet
+
+PORT=3000
+JWT_SECRET=your_super_secret_key_change_me
+REDIS_URL=redis://localhost:6379
+NODE_ENV=development
+Start Redis: Ensure you have a Redis server running locally. If you have Redis installed, start it with:
+
+Bash
+
+redis-server
+Run the Application:
+
+Bash
+
+# For Development (Nodemon + ts-node)
+
+npm run dev
+
+# To Build and Run Production
+
+npm run build
+npm start
+
+## 🏗️ Architecture & Middleware Flow
+
+A key part of this project is the **Middleware Pipeline**. To ensure security filters don't interfere with legitimate traffic (like CORS preflights), the order is strictly defined:
+
+1. **CORS Configuration**: Pre-authorizes trusted origins (e.g., your frontend on port 5500).
+2. **Helmet**: Injects security headers like `Content-Security-Policy` and `X-Frame-Options`.
+3. **Rate Limiting**: Throttles excessive requests before they hit expensive database operations.
+4. **Parsers**: `cookie-parser` and `express.json()` prepare the data for validation.
+5. **CSRF Protection**: Validates the request signature against the session cookie.
+6. **Authentication**: Services verify the JWT and check the **Redis Blacklist** for revoked sessions.
+
+---
+
+## 📝 Lessons Learned
+
+- **Synchronous Tokens**: Learned how to implement a "handshake" GET route to seed the CSRF secret before the user performs state-changing actions.
+- **Token Revocation**: Since JWTs are stateless, we implemented a hybrid approach using Redis to "kill" sessions instantly upon logout.
+- **Cookie Security**: Deep dived into `SameSite`, `HttpOnly`, and `Secure` flags to prevent side-channel attacks.
+
+---
+
+## 🤝 Contributing
+
+1. **Fork** the Project
+2. **Create** your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. **Commit** your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. **Push** to the Branch (`git push origin feature/AmazingFeature`)
+5. **Open** a Pull Request
