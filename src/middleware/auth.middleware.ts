@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import redisClient from "../config/redis.js";
 import { JWTpayload } from "../types/user.js";
 
-const JWT_SECRET = process.env.JWT_SECRET || "fallback_secret";
+const JWT_SECRET = process.env.JWT_SECRET;
 
 export const authenticate = async (
   req: Request,
