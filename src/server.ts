@@ -11,10 +11,15 @@ import cors from "cors";
 // routes
 import authRoutes from "./routes/auth.routes.js";
 import bookRoutes from "./routes/book.routes.js";
+import helmet from "helmet";
 
 dotenv.config();
 
 const app = express();
+
+// Apply helmet early in the middleware chain
+app.use(helmet());
+
 app.use(
   cors({
     origin: ["http://127.0.0.1:5500", "http://localhost:5500"],

@@ -21,8 +21,8 @@ async function fetchToken() {
 
 // 2. The Register function
 async function handleRegister() {
-  const username = document.getElementById("username").value;
-  const pass = document.getElementById("pass").value;
+  const username = document.getElementById("username").value.toString();
+  const pass = document.getElementById("pass").value.toString();
 
   if (!CSRF_TOKEN) {
     alert("Security token not loaded yet. Please wait.");

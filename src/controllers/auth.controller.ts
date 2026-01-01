@@ -1,16 +1,26 @@
 import { AuthService } from "../services/auth.service.js";
 import { Request, Response } from "express";
-import { tokenBlacklist } from "../config/db.js";
+// import { tokenBlacklist } from "../config/db.js";
 import redisClient from "@/config/redis.js";
 import jwt from "jsonwebtoken";
+
+import createDOMPurify from "dompurify";
+import { JSDOM } from "jsdom";
+
+const window = new JSDOM("").window;
+const DOMPurify = createDOMPurify(window);
 
 export const register = async (req: Request, res: Response) => {
   try {
     const { username, pass } = req.body;
-    if (!username || !pass)
+    const sanitizedUsername = DOMPurify.sanitize(username);
+    const sanitizedPass = DOMPurify.sanitize(pass);
+
+    if (!sanitizedUsername || !sanitizedPass)
       return res.status(400).json({ message: "creds missing" });
-    const user = await AuthService.register(username, pass);
-    res.status(201).json({ message: `created new user: ${username}` });
+
+    const user = await AuthService.register(sanitizedUsername, sanitizedPass);
+    res.status(201).json({ message: `created new user: ${sanitizedUsername}` });
   } catch (e) {
     return res.status(500).json({ message: "server error" });
   }
@@ -19,7 +29,12 @@ export const register = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
   try {
     const { username, pass } = req.body;
-    const token = await AuthService.login(username, pass);
+    const sanitizedUsername = DOMPurify.sanitize(username);
+    const sanitizedPass = DOMPurify.sanitize(pass);
+
+    if (!sanitizedUsername || !sanitizedPass)
+      return res.status(400).json({ message: "creds missing" });
+    const token = await AuthService.login(sanitizedUsername, sanitizedPass);
     if (!token)
       return res.status(400).json({ message: "invalid username or pass" });
     res.status(200).json({ token });
