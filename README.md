@@ -83,12 +83,16 @@ Run the Application:
 
 # For Development (Nodemon + ts-node)
 
+```bash
 npm run dev
+```
 
 # To Build and Run Production
 
+```bash
 npm run build
 npm start
+```
 
 ## 🏗️ Architecture & Middleware Flow
 
