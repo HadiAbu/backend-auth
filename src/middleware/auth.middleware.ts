@@ -25,7 +25,7 @@ export const authenticate = async (
     }
 
     // 2. Standard JWT verification
-    const decoded = jwt.verify(token, JWT_SECRET) as JWTpayload;
+    const decoded = JWT_SECRET && (jwt.verify(token, JWT_SECRET) as JWTpayload);
     console.log(decoded);
     // attach the user data (payload) to the request for easier retrieval later on
     req.user = decoded;
